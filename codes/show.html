@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+	<meta charset="utf8">
+<head>
+	<title>马的走法-演示</title>
+</head>
+<body>
+
+<canvas id="chessBoard" width="600" height="600">
+	Your brower is not support canvas!
+</canvas>
+
+<button id="start" onclick="startGame()">开始演示</button>
+<button id="nextStep" onclick="nextStep()">下一步</button>
+<textarea id="steps" rows="15" placeholder="请输入马的走法"></textarea>
+
+<script language="javascript" type="text/javascript">
+// var ScreenWidth = document.body.clientWidth;
+// var ScreenHeight = document.body.clientHeight;
+function Point(x, y) {
+	this.x = x;
+	this.y = y;
+}
+
+var CanvasWidth = 600;
+var CanvasHeight = 600;
+var NumOfRow = 10, NumOfCol = 10;
+var RowSpace = CanvasHeight / NumOfRow, ColSpace = CanvasWidth / NumOfCol;
+var Offset_h = CanvasWidth / NumOfRow / 2, Offset_v = CanvasHeight / NumOfCol / 2;
+var Radius = Math.min(RowSpace, ColSpace) / 2 - 1;
+var canvas = document.getElementById("chessBoard");
+var context = canvas.getContext("2d");
+var nextStepBtn = document.getElementById("nextStep");
+var step_now = 0;
+var steps = [], lastPos = new Point(0, 0);
+var gameStarted = false;
+
+window.onload = function() {
+	// 加载背景图片
+	loadBackGround(context, "background.jpg");
+	context.fillStyle = "red";
+	context.lineWidth = 2;
+	context.font = "25px Arial";
+	nextStepBtn.style.visibility = "hidden";
+}
+
+function startGame() {
+	if (gameStarted) {
+		location.reload();
+		startGame();
+	}
+	else
+		gameStarted = true;
+	DrawChessBoard(context);
+
+	// 获取输入的走法
+	var path = document.getElementById("steps").value;
+	path = path.split(/\s+/);
+	steps = [];
+	for (var i = 0; i < path.length; ++i) {
+		path[i] = parseInt(path[i], 10);
+		if (!isNaN(path[i])) 
+			steps.push(path[i]);
+	}
+
+	if (steps.length == 0 || steps.length % 2 != 0) {
+		alert("请输入合法的马的走法");
+		return ;
+	}
+
+	nextStepBtn.style.visibility = "visible";
+	step_now = 0;
+	var beg = calPosition(steps[0], steps[1]);
+	var end = calPosition(steps[steps.length-2], steps[steps.length-1]);
+	lastPos = new Point(beg.x, beg.y);
+	context.fillStyle = "CornflowerBlue";
+	drawCircle(context, beg.x, beg.y, Radius);
+	drawCircle(context, end.x, end.y, Radius);
+	context.fillStyle = "red";
+}
+
+function loadBackGround(context, imgPath) {
+	var background = new Image();
+	background.src = imgPath;
+
+	if (background.complete) {
+		DrawChessBoard(context);
+		window.alert("背景图片已加载完毕");
+	} else {
+		background.onload = function() {
+			context.drawImage(background, 0, 0, CanvasWidth, CanvasHeight);
+		};
+		background.onerror = function() {
+			window.alert("背景图片加载出错");
+		};
+	}
+}
+
+function DrawChessBoard(context) {
+	for (var row = 0; row < NumOfRow; ++row) {
+		var beg = calPosition(row, 0), end = calPosition(row, NumOfCol-1);
+		drawLine(context, beg.x, beg.y, end.x, end.y);
+		if (row > 0)
+			drawText(context, beg.x-Offset_h/3*2, beg.y+5, row.toString());
+	}
+
+	for (var col = 0; col < NumOfCol; ++col) {
+		var beg = calPosition(0, col), end = calPosition(NumOfRow-1, col);
+		drawLine(context, beg.x, beg.y, end.x, end.y);
+		if (col > 0)
+			drawText(context, beg.x-5, beg.y-Offset_v/4, col.toString());
+	}
+
+	var origin = calPosition(0, 0);
+	drawText(context, origin.x - 15, origin.y - 5, "0");
+}
+
+function drawLine(context, x1, y1, x2, y2) {
+	context.moveTo(x1, y1);
+	context.lineTo(x2, y2);
+	context.stroke();
+}
+
+function drawCircle(context, x, y, r) {
+	context.beginPath();
+	context.arc(x, y, r, 0, 2*Math.PI);
+	context.fill();
+	context.closePath();
+}
+
+function drawText(context, x, y, str) {
+	context.fillStyle = "black";
+	context.fillText(str, x, y);
+}
+
+function calPosition(row, col) {
+	return new Point(col*ColSpace+Offset_h, row*RowSpace+Offset_v);
+}
+
+function nextStep() {
+	step_now += 1;
+	var point = calPosition(steps[step_now*2], steps[step_now*2+1]);
+	console.log(steps[step_now*2], steps[step_now*2+1], point.x, point.y);
+	drawCircle(context, point.x, point.y, Radius);
+	drawLine(context, lastPos.x, lastPos.y, point.x, point.y);
+	lastPos = point;
+
+	if (step_now >= steps.length/2-1) {
+		alert("已经到达目标位置");
+		return ;
+	}
+}
+
+</script>
+</body>
+</html>
