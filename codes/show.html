@@ -9,7 +9,7 @@
 	Your brower is not support canvas!
 </canvas>
 
-<button id="start" onclick="startGame()">开始演示</button>
+<input id="start" onclick="startGame()" type="button" value="开始演示"></input>
 <button id="nextStep" onclick="nextStep()">下一步</button>
 <textarea id="steps" rows="15" placeholder="请输入马的走法"></textarea>
 
@@ -23,7 +23,7 @@ function Point(x, y) {
 
 var CanvasWidth = 600;
 var CanvasHeight = 600;
-var NumOfRow = 10, NumOfCol = 10;
+var NumOfRow = 11, NumOfCol = 11;
 var RowSpace = CanvasHeight / NumOfRow, ColSpace = CanvasWidth / NumOfCol;
 var Offset_h = CanvasWidth / NumOfRow / 2, Offset_v = CanvasHeight / NumOfCol / 2;
 var Radius = Math.min(RowSpace, ColSpace) / 2 - 1;
@@ -39,7 +39,7 @@ window.onload = function() {
 	loadBackGround(context, "background.jpg");
 	context.fillStyle = "red";
 	context.lineWidth = 2;
-	context.font = "25px Arial";
+	context.font = "17px Arial";
 	nextStepBtn.style.visibility = "hidden";
 }
 
@@ -48,8 +48,10 @@ function startGame() {
 		location.reload();
 		startGame();
 	}
-	else
+	else {
 		gameStarted = true;
+		document.getElementById("start").value = "重新开始";
+	}
 	DrawChessBoard(context);
 
 	// 获取输入的走法
@@ -100,7 +102,7 @@ function DrawChessBoard(context) {
 		var beg = calPosition(row, 0), end = calPosition(row, NumOfCol-1);
 		drawLine(context, beg.x, beg.y, end.x, end.y);
 		if (row > 0)
-			drawText(context, beg.x-Offset_h/3*2, beg.y+5, row.toString());
+			drawText(context, beg.x-Offset_h/5*4, beg.y+5, row.toString());
 	}
 
 	for (var col = 0; col < NumOfCol; ++col) {
