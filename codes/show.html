@@ -14,8 +14,6 @@
 <textarea id="steps" rows="15" placeholder="请输入马的走法"></textarea>
 
 <script language="javascript" type="text/javascript">
-// var ScreenWidth = document.body.clientWidth;
-// var ScreenHeight = document.body.clientHeight;
 function Point(x, y) {
 	this.x = x;
 	this.y = y;
@@ -141,7 +139,6 @@ function calPosition(row, col) {
 function nextStep() {
 	step_now += 1;
 	var point = calPosition(steps[step_now*2], steps[step_now*2+1]);
-	// console.log(steps[step_now*2], steps[step_now*2+1], point.x, point.y);
 	drawCircle(context, point.x, point.y, Radius);
 	drawLine(context, lastPos.x, lastPos.y, point.x, point.y);
 	lastPos = point;
